@@ -1,0 +1,19 @@
+# Build output
+build/
+bin/
+out/
+*.exe
+*.dll
+*.pdb
+*.lib
+*.exp
+*.log
+
+# IDE & Editor files
+.vscode/*
+!.vscode/tasks.json
+!.vscode/c_cpp_properties.json
+.vs/
+
+# Archives & Releases
+*.zip
