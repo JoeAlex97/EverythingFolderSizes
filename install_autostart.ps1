@@ -1,10 +1,10 @@
-# Script para registrar e iniciar FolderSizeExt inmediatamente y en cada inicio de Windows
+# Script to register and start FolderSizeExt immediately and on Windows startup
 $scriptDir = $PSScriptRoot
 if (-not $scriptDir) { $scriptDir = (Get-Location).Path }
 $injectScript = Join-Path $scriptDir "inject_dll.ps1"
 $taskName = "EverythingFolderSizeExtension"
 
-Write-Host "Creando Tarea Programada para iniciar FolderSizeExt con Windows..." -ForegroundColor Cyan
+Write-Host "Creating Scheduled Task to launch FolderSizeExt with Windows..." -ForegroundColor Cyan
 
 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$injectScript`""
 $trigger = New-ScheduledTaskTrigger -AtLogOn
@@ -13,8 +13,8 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
 
-Write-Host "Inyectando la extension en las ventanas del Explorador actuales..." -ForegroundColor Cyan
+Write-Host "Injecting extension into open File Explorer windows..." -ForegroundColor Cyan
 & powershell.exe -ExecutionPolicy Bypass -File "$injectScript"
 
-Write-Host "`n¡INSTALACION COMPLETADA!" -ForegroundColor Green
-Write-Host "FolderSizeExt esta activo ahora mismo y se cargara automaticamente en cada inicio de Windows." -ForegroundColor Yellow
+Write-Host "`nSETUP COMPLETED SUCCESSFULLY!" -ForegroundColor Green
+Write-Host "FolderSizeExt is now active and will automatically load on Windows startup." -ForegroundColor Yellow

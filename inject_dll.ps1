@@ -1,21 +1,21 @@
-# Script para inyectar FolderSizeExt.dll dentro de explorer.exe
+# Script to inject FolderSizeExt.dll into explorer.exe
 $scriptDir = $PSScriptRoot
 if (-not $scriptDir) { $scriptDir = (Get-Location).Path }
 
-# Buscar la DLL en la carpeta local (Release) o en la subcarpeta build (Desarrollo)
+# Locate DLL in local folder (Release) or build folder (Development)
 $dllPath = Join-Path $scriptDir "FolderSizeExt.dll"
 if (-not (Test-Path $dllPath)) {
     $dllPath = Join-Path $scriptDir "build\FolderSizeExt.dll"
 }
 
 if (-not (Test-Path $dllPath)) {
-    Write-Host "[ERROR] No se encontro FolderSizeExt.dll." -ForegroundColor Red
+    Write-Host "[ERROR] Could not find FolderSizeExt.dll." -ForegroundColor Red
     exit
 }
 
 $dllDir = Split-Path $dllPath -Parent
 
-# Copiar dbghelp.dll / symsrv.dll si estan disponibles en la ruta de Visual Studio (solo para desarrollo)
+# Copy dbghelp.dll / symsrv.dll if available in Visual Studio path (Dev mode only)
 $dbghelpSrc = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\TestWindow\VsTest\x64\dbghelp.dll"
 $symsrvSrc  = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\Remote Debugger\x64\symsrv.dll"
 
@@ -26,11 +26,11 @@ if ((Test-Path $symsrvSrc) -and (-not (Test-Path (Join-Path $dllDir "symsrv.dll"
     Copy-Item $symsrvSrc (Join-Path $dllDir "symsrv.dll") -Force -ErrorAction SilentlyContinue
 }
 
-Write-Host "Inyectando $dllPath en explorer.exe..." -ForegroundColor Cyan
+Write-Host "Injecting $dllPath into explorer.exe..." -ForegroundColor Cyan
 
 $explorerProcs = Get-Process -Name explorer -ErrorAction SilentlyContinue
 if (-not $explorerProcs) {
-    Write-Host "[ERROR] No se encontro ningun proceso explorer.exe." -ForegroundColor Red
+    Write-Host "[ERROR] No explorer.exe process found." -ForegroundColor Red
     exit
 }
 
@@ -59,10 +59,10 @@ $MEM_COMMIT_RESERVE = 0x3000
 $PAGE_READWRITE = 0x04
 
 foreach ($proc in $explorerProcs) {
-    Write-Host "Inyectando en PID $($proc.Id)... " -NoNewline
+    Write-Host "Injecting into PID $($proc.Id)... " -NoNewline
     $hProcess = $Win32::OpenProcess($PROCESS_ALL_ACCESS, $false, $proc.Id)
     if ($hProcess -eq [IntPtr]::Zero) {
-        Write-Host "[ERROR: Permiso denegado. Ejecute como Administrador]" -ForegroundColor Red
+        Write-Host "[ERROR: Permission denied. Run as Administrator]" -ForegroundColor Red
         continue
     }
 
@@ -78,8 +78,8 @@ foreach ($proc in $explorerProcs) {
     if ($hThread -ne [IntPtr]::Zero) {
         Write-Host "[OK]" -ForegroundColor Green
     } else {
-        Write-Host "[FALLO]" -ForegroundColor Red
+        Write-Host "[FAILED]" -ForegroundColor Red
     }
 }
 
-Write-Host "`nNOTA: Si reinicias explorer.exe, la inyeccion se borra. Abre una carpeta en el Explorador sin reiniciar el proceso para ver los cambios." -ForegroundColor Yellow
+Write-Host "`nNOTE: If you restart explorer.exe, the injection is cleared. Open a File Explorer window without restarting the process to view changes." -ForegroundColor Yellow
