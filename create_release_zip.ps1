@@ -19,7 +19,7 @@ $symsrvSrc  = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Co
 if (Test-Path $dbghelpSrc) { Copy-Item $dbghelpSrc (Join-Path $buildDir "dbghelp.dll") -Force -ErrorAction SilentlyContinue }
 if (Test-Path $symsrvSrc)  { Copy-Item $symsrvSrc  (Join-Path $buildDir "symsrv.dll")  -Force -ErrorAction SilentlyContinue }
 
-# Copiar UNICAMENTE los 7 archivos necesarios para el usuario final
+# Copiar los archivos necesarios para el usuario final
 Copy-Item (Join-Path $buildDir "FolderSizeExt.dll") $distDir -Force
 Copy-Item (Join-Path $buildDir "dbghelp.dll") $distDir -Force
 Copy-Item (Join-Path $buildDir "symsrv.dll") $distDir -Force
@@ -32,6 +32,7 @@ if (Test-Path $readmeSrc) {
 Copy-Item (Join-Path $repoDir "inject_dll.ps1") $distDir -Force
 Copy-Item (Join-Path $repoDir "install_autostart.ps1") $distDir -Force
 Copy-Item (Join-Path $repoDir "uninstall_autostart.ps1") $distDir -Force
+Copy-Item (Join-Path $repoDir "run_silent.vbs") $distDir -Force
 
 $zipPath = Join-Path $repoDir "EverythingFolderSizes-v1.0.0-x64.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
